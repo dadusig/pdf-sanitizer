@@ -1,3 +1,4 @@
+import os
 from os import path
 from glob import glob
 import sys
@@ -9,27 +10,49 @@ def find_ext(dr, ext):
     return glob(path.join(dr,"*.{}".format(ext)))
 
 def main():
-	all_pdf_files = find_ext(".","pdf")
+	# path of all pdf all_pdf_files
+	# very bad implemenation. todo: use getopt
+	my_path="." #default path is the current folder
+	if len(sys.argv) == 2:
+		my_path=sys.argv[1]
+	elif len(sys.argv) > 2:
+		print("Something went wrong. Check your arguments.")
+		exit(-1)
 
+	# create results directory if not exists
+	os.makedirs(my_path + "/results" , exist_ok=True)
+
+	print("Path given: ", my_path, "\n")
+
+	# get all pdf files from specified folder
+	all_pdf_files = find_ext(my_path,"pdf")
+
+	# create metadata patch
 	output = PdfFileWriter()
-
 	infoDict = output._info.getObject()
 	infoDict.update({
-		NameObject('/Title'): createStringObject(u'title'),
-		NameObject('/Author'): createStringObject(u'author'),
-		NameObject('/Subject'): createStringObject(u'subject'),
-		NameObject('/Creator'): createStringObject(u'a script')
+		NameObject('/Title'): createStringObject(u'title removed'),
+		NameObject('/Author'): createStringObject(u'author removed'),
+		NameObject('/Subject'): createStringObject(u'subject removed'),
+		NameObject('/Creator'): createStringObject(u'software quality script'),
+		NameObject('/Producer'): createStringObject(u'software quality script'),
+		NameObject('/Keywords'): createStringObject(u'software, quality, sanitized')
 	})
 
 	c = 0
-
 	for pdf in all_pdf_files:
 		inputPdf = PdfFileReader(open(pdf, "rb"))
 		docInfo = inputPdf.getDocumentInfo()
 
 		c = c + 1
 
-		print("Processing file: ", pdf)
+		# get filename from path
+		filename = os.path.basename(pdf)
+		# remove the extension
+		filename_noext = os.path.splitext(filename)[0]
+
+		print(c, ". Processing file: ", pdf)
+		print("filename: ", filename)
 		print("Title: ", docInfo.title)
 		print("Author: ", docInfo.author)
 		print("Subject: ", docInfo.subject)
@@ -39,13 +62,11 @@ def main():
 		for page in range(inputPdf.getNumPages()):
 			output.addPage(inputPdf.getPage(page))
 
-		outputStream = open(str(c)+".pdf", 'wb')
-		output.write(outputStream)
-		outputStream.close()
-
 		print("\n")
 
-
+		outputStream = open("./results/"+filename_noext+"-sanitized.pdf", 'wb')
+		output.write(outputStream)
+		outputStream.close()
 
 if __name__ == '__main__':
     main()
