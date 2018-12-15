@@ -1,6 +1,6 @@
-# PDF sanitizer
+# PDF sanitizer ![semester](https://img.shields.io/badge/Stability-alpha%20version-orange.svg)
 
-## A batch pdf metadata removal script  ![semester](https://img.shields.io/badge/Stability-alpha%20version-orange.svg)
+## A batch pdf metadata removal script  
 
 A simple python script that takes as input a directory containing pdf files and produces a subdirectory of the given directory containing the same pdf files without their original metadata.
 
@@ -14,7 +14,7 @@ The script uses as default, the current working directory, unless otherwise spec
 
 #### without specifying a directory
 
-it will search for pdf files inside the folder from which it called
+it will search for pdf files inside the folder from which it was called
 
 ```bash
 $ python sanitizer.py
