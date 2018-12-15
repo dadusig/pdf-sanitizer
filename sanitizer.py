@@ -2,10 +2,10 @@ import os
 from os import path
 from glob import glob
 import sys
-
 from PyPDF2 import PdfFileWriter, PdfFileReader
 from PyPDF2.generic import NameObject, createStringObject
 
+#find in given path all files of an extension
 def find_ext(dr, ext):
     return glob(path.join(dr,"*.{}".format(ext)))
 
@@ -41,16 +41,17 @@ def main():
 
 	c = 0
 	for pdf in all_pdf_files:
-		inputPdf = PdfFileReader(open(pdf, "rb"))
+		inputPdf = PdfFileReader(open(pdf, "rb"), strict=False) # strict=False for Windows support - PdfReadWarning: Superfluous whitespace found in object header
 		docInfo = inputPdf.getDocumentInfo()
 
-		c = c + 1
+		c += 1
 
 		# get filename from path
 		filename = os.path.basename(pdf)
 		# remove the extension
 		filename_noext = os.path.splitext(filename)[0]
 
+		#print some information
 		print(c, ". Processing file: ", pdf)
 		print("filename: ", filename)
 		print("Title: ", docInfo.title)
@@ -59,12 +60,15 @@ def main():
 		print("Producer: ", docInfo.producer)
 		print("Creator: ", docInfo.creator)
 
+		#create new pdf
 		for page in range(inputPdf.getNumPages()):
 			output.addPage(inputPdf.getPage(page))
 
 		print("\n")
 
-		outputStream = open("./results/"+filename_noext+"-sanitized.pdf", 'wb')
+		# write new file in results subfolder
+		# the new file name will be the old one extended with "-sanitized.pdf"
+		outputStream = open(my_path+"/results/"+filename_noext+"-sanitized.pdf", 'wb')
 		output.write(outputStream)
 		outputStream.close()
 
