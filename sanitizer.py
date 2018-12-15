@@ -27,22 +27,24 @@ def main():
 	# get all pdf files from specified folder
 	all_pdf_files = find_ext(my_path,"pdf")
 
-	# create metadata patch
-	output = PdfFileWriter()
-	infoDict = output._info.getObject()
-	infoDict.update({
-		NameObject('/Title'): createStringObject(u'title removed'),
-		NameObject('/Author'): createStringObject(u'author removed'),
-		NameObject('/Subject'): createStringObject(u'subject removed'),
-		NameObject('/Creator'): createStringObject(u'software quality script'),
-		NameObject('/Producer'): createStringObject(u'software quality script'),
-		NameObject('/Keywords'): createStringObject(u'software, quality, sanitized')
-	})
+
 
 	c = 0
 	for pdf in all_pdf_files:
 		inputPdf = PdfFileReader(open(pdf, "rb"), strict=False) # strict=False for Windows support - PdfReadWarning: Superfluous whitespace found in object header
 		docInfo = inputPdf.getDocumentInfo()
+
+		# create metadata patch
+		output = PdfFileWriter()
+		infoDict = output._info.getObject()
+		infoDict.update({
+			NameObject('/Title'): createStringObject(u'title removed'),
+			NameObject('/Author'): createStringObject(u'author removed'),
+			NameObject('/Subject'): createStringObject(u'subject removed'),
+			NameObject('/Creator'): createStringObject(u'software quality script'),
+			NameObject('/Producer'): createStringObject(u'software quality script'),
+			NameObject('/Keywords'): createStringObject(u'software, quality, sanitized')
+		})
 
 		c += 1
 
