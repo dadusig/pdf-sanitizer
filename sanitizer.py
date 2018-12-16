@@ -1,3 +1,4 @@
+#software-quality-script
 import os
 from os import path
 from glob import glob
